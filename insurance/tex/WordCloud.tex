@@ -1,0 +1,56 @@
+\documentclass[11pt]{report}
+\setcounter{secnumdepth}{0}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\begin{document}
+
+\title{Sonnet Insurance: An analysis of Focus Group data using Word Clouds}
+\author{Alexei Marcilio}
+\date{\today}
+\maketitle
+
+
+
+\newpage
+
+\textcolor{blue}{\section{Introduction}}
+
+
+In February of 2020 Sonnet Insurance, in an effort to better understand employee satisfaction, hosted several employee focus groups. One group was held in Montreal and the other in Toronto. A separate focus group of team leaders was also conducted.
+
+A word cloud is a pictorial display of a group of words depicted in various sizes. Words will appear bigger and bolder depending on the frequency they occur. Word Clouds are often used to display the frequency of words used by focus group participants. Focus groups collect data in an open-ended way in which participants are encouraged to give textual answers. Word clouds allow for a quantitative way to display this textual data.
+
+This paper presents the analysis of the three focus groups conducted by Sonnet Insurance using word clouds, and describes the methods by which these results were created.
+
+
+
+Python is now the most popular programming language used in data science due to the many libraries that can be utilized for specific tasks. Here will will leverage the library \emph{wordcloud} in order to create word clouds from text files.
+The following methods were used:
+
+\begin{enumerate}
+\item Each of the google docs which contained transcribed text from the three focus groups were saved as text files after the questions were removed.
+\item A function was created in Python which utilized wordcloud and take two parameters, an input and output file.
+Additional stopwords were added based on the preliminary results. Stopwords are common words, such as "the" and "and" which are excluded as they have no meaning.
+\item Each dataset was loaded and a word cloud image (png file) was created for each focus group, one for Toronto, one for Montreal and one for Team Leaders.
+\item A combined dataset comprised of the Montreal and Toronto focus groups was created to assess overall employee sentiment.
+\end{enumerate}
+
+\textcolor{blue}{\section{Libraries}}
+
+Let's import all the necessary libraries. STOPWORDS are the default stopwords - words which we do not want to include in the results.
+
+\begin{lstlisting}
+
+Start with loading all necessary libraries
+import matplotlib.pyplot as pPlot
+import numpy as npy
+from wordcloud import WordCloud, STOPWORDS
+from PIL import Image
+\end{lstlisting}
+
+
+
+
+
+

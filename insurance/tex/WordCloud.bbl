@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+
+\bibitem{cielen2016introducing}
+Davy Cielen, Arno Meysman, and Mohamed Ali.
+\newblock {\em Introducing data science: big data, machine learning, and more,
+  using Python tools}.
+\newblock Manning Publications Co., 2016.
+
+\bibitem{lamport1994latex}
+Leslie Lamport.
+\newblock {\em LATEX: a document preparation system: user's guide and reference
+  manual}.
+\newblock Addison-wesley, 1994.
+
+\bibitem{ramlo2011using}
+Susan Ramlo.
+\newblock Using word clouds to visually present q methodology data and
+  findings.
+\newblock {\em Journal of Human Subjectivity}, 9(2):95--108, 2011.
+
+\end{thebibliography}
