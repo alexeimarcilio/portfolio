@@ -1,0 +1,494 @@
+---
+title: "A comparison of retinal nerve fiber layer thickness in pseudopapilledema and papilledema"
+author: "Alexei Marcilio, Merrimack College"
+date: "Mar 28th, 2018"
+output:
+  pdf_document: default
+  html_document:
+    css: lab.css
+    highlight: pygments
+    theme: cerulean
+  word_document: default
+---
+
+```{r echo=FALSE, results='hide', message=FALSE}
+require(ggplot2)
+
+require(captioner)
+
+library(ggthemes)
+library(dplyr)
+library(tidyr)
+library(directlabels)
+library(ggrepel)
+library(extrafont)
+library(stringr)
+library(Amelia)
+library(corrgram)
+library(corrplot)
+require(gridExtra)
+require(ggmosaic)
+require(lsr)
+library(zoo)
+library(caTools)
+library(randomForest)
+library(e1071)
+library(purrr)
+library(caret)
+library(stats)
+
+
+figs <- captioner(prefix="Figure")
+tbls <- captioner(prefix="Table")
+
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, echo = FALSE, dev = "cairo_pdf")
+
+```
+
+\pagenumbering{gobble}
+
+\newpage
+
+\pagenumbering{arabic}
+
+\tableofcontents
+
+\newpage
+
+__Executive Summary__
+
+
+\newpage
+
+__Introduction__
+
+
+In clinical practice, a common dilemma is to distinguish pseudopapilledema from pathologic optic disc edema. 
+Diagnosis and management of pseudopapilledema and papilledema are vastly different. However, frequently, 
+patients with elevated optic discs are almost always referred for neuro-ophthalmologic evaluation and may 
+be subjected to neuroimaging, lumbar puncture, and other laboratory studies. It is more challenging to the 
+practitioner when patients have papilledema superimposed on pseudopapilledema because patients with 
+pseudopapilledema have elevated optic nerve head appearances at baseline. It is important to note that 
+papilledema is a serious clinical sign that may represent underlying threatening intracranial pathology. 
+Similarly, it is as important to recognize features of pseudopapilledema to avoid unnecessary costly and invasive tests.
+
+Optical coherence tomography (OCT), a non-invasive imaging method, which creates in vivo cross sections of the retina, 
+has been a valuable tool and is used to understand some neurological diseases such as optic neuritis, 
+multiple sclerosis, spinocerebellar ataxia, neuromyelitis optica, pituitary tumors and Parkinson's disease.
+Studies have  compared retinal nerve fiber layer (RNFL) thickness in patients with pseudopapilledema and papilledema.  
+The purpose of this study is to evaluate and characterize findings of patients with pseudopapilledema and 
+papilledema superimposed pseudopapilledema to help clinicians understand disease progression and resolution 
+by describing patients with papilledema superimposed on pseudopapilledema, assessing the upper-limit of RNFL 
+thickness in patients with pseudopapilledema, identifying differences in variability of RNFL measurements of 
+patients during follow-up, and proposing recommendations on how to approach patients with pseudopapilledema.
+
+Data was collected from 2010-2017, a 6-year period, from the database of patients of the neuro-ophthalmology 
+service at New England Eye Center at Tufts Medical Center, Boston Massachusetts
+Twenty-four eyes of 12 patients were included in pseudopapilledema group and 14 eyes of 7 patients were 
+included in papilledema superimposed on pseudopapilledema group. 
+Statistical analysis and machine learning techniques were used to evaluate the the accuracy of predicting 
+whether a patient has pseudopapilledema or the more serious papilledema. Such a predictive model could potentially
+aid in diagnosis resulting in cost savings and increased patient safety by reducing the need for invasive tests.
+
+##__Results__
+
+
+
+__Data Cleaning__
+
+
+```{r}
+# Open the loan_data.csv file and save it as a dataframe called pap.
+# Set wd
+setwd("/Users/alexeimarcilio/Desktop/portfolio/medical")
+pap <- read.csv("pseudopapRNFLdataforR_Tam.csv")
+```
+
+Let's check the structure of the data.
+
+```{r}
+str(pap)
+summary(pap)
+```
+
+Features that should be factors are changed. Group, which indicates pseudopapilledema or
+papilledema, gender, and eye, which indicates left or right, should all be factors.
+
+```{r}
+pap$group <- as.factor(pap$group)
+pap$gender <- as.factor(pap$gender)
+pap$eye <- as.factor(pap$eye)
+
+```
+
+The column names are changed to make then more meaningful. 
+
+```{r}
+colnames(pap) <- c('ID','Group','Gender','AgePresented','DurOfFU','Months',
+                   'AvgRNFL','RNFL.I','RNFL.S','RNFL.N','RNFL.T','eye')
+```
+
+Gender is indicated as 2 for male and 1 for female. Group 2 indicates Papilledema and 
+Group 1 indicates Pseudopapilledema, and eye 1 indicates the left eye, while 2 indicates the 
+right eye.  The values for these features will be changed  to make them more meaningful. 
+Several small functions are written to accomplish this.
+
+```{r}
+# This function will update gender
+update_gender <- function(gender){
+  gender <- as.character(gender)
+  if (gender == "1"){
+    return('F')
+  }else if (gender == "2" ) {
+    return('M')
+  }else{
+    return(gender)
+  }
+}
+# Now we use sapply to apply the function to all rows
+pap$Gender <- sapply(pap$Gender, update_gender)
+# change it back to a factor
+pap$Gender <- as.factor(pap$Gender)
+# Now let's do the same for group
+update_group <- function(group){
+  group <- as.character(group)
+  if (group == "1"){
+    return('Pseudo')
+  }else if (group == "2" ) {
+    return('Pap')
+  }else{
+    return(group)
+  }
+}
+# Now we use sapply to apply the function to all rows
+pap$Group <- sapply(pap$Group, update_group)
+# change it back to a factor
+pap$Group <- as.factor(pap$Group)
+# Now let's do the same for group
+update_eye <- function(eye){
+  eye <- as.character(eye)
+  if (eye == "1"){
+    return('Left')
+  }else if (eye == "2" ) {
+    return('Right')
+  }else{
+    return(eye)
+  }
+}
+# And finally for eye
+pap$eye <- sapply(pap$eye, update_eye)
+# change it back to a factor
+pap$eye <- as.factor(pap$eye)
+
+```
+
+__Data Exploration__
+
+__Missing Values__
+
+Let's check for missing values. The visits of each patient are recorded by month after the initial
+visit which is indicated as month 0. Every subsequent month, from 1 to 66, has a placeholder and this 
+accounts for the multiple missing values.
+
+```{r}
+ missmap(pap, main='', col = c("black","wheat"),
+         legend=FALSE,  x.cex = 0.7, y.labels = NULL, y.at = NULL, rank.order = TRUE) 
+
+```
+
+As these months in which a patient has no visits are not necessary we can remove them. There are no missing
+values for the patient demographic data. 
+
+```{r}
+pap <- na.omit(pap)
+
+```
+
+After all missing values were removed the missing map chart shows no missing values.
+
+####__Correlations__
+
+The average RNFL is not included here as it's a derived field that will be highly correlated with the other RNFL measures.
+Each RNFL measure is moderately correlated to each other in the left eye, but more strongly correlated in the right eye.
+RNFL.S is particularly strongly correlated with RNFL.I in the right eye (r$^2$ = 0.8). In the bottom panels long, narrow ellipses represent high correlations while circular ellipses represent low correlations.
+
+```{r}
+
+  pap %>% 
+  select(-AvgRNFL, -ID) %>% 
+  filter(eye=="Left") %>% 
+  corrgram(order=TRUE, lower.panel = panel.ellipse,
+         upper.panel = panel.cor, text.panel = panel.txt)
+
+  pap %>% 
+  select(-AvgRNFL, -ID) %>% 
+  filter(eye=="Left") %>% 
+  corrgram(order=TRUE, lower.panel = panel.ellipse,
+         upper.panel = panel.cor, text.panel = panel.txt)
+
+
+```
+
+
+
+####__Distributions__
+
+The distributions of the numeric fields were examined. There are a wide range of ages, months, 
+and visit durations. The continuous variables of interest show fairly normal unimodal distributions
+that are skewed to the right.
+
+```{r}
+
+# pap %>% 
+#   select(-ID) %>% 
+#   keep(is.numeric) %>% 
+#   gather() %>% 
+#   ggplot(aes(value)) +
+#   facet_wrap(~ key, scales = "free") +
+#   geom_histogram(alpha=0.6, color="black", fill="royalblue1") + 
+#   theme_wsj(base_family = "serif") +
+#   theme(axis.text.x= element_text(size=6, face=1)) +
+#   theme(axis.text.y= element_text(size=6, face=1))
+
+pap %>% 
+  select(-ID) %>% 
+  keep(is.numeric) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_freqpoly(alpha=1, color="royalblue1", size=1) + xlab("") +
+  theme_tufte() +
+  theme(text=element_text(size=14, family="Tw Cen MT")) +
+  theme(axis.text.x= element_text(size=8, face=1)) +
+  theme(axis.text.y= element_text(size=8, face=1)) + 
+  xlab("RNFL Thickness")
+
+
+```
+
+An examination of the distributions of Age, Duration and Month of Visit between Papilledema and
+Pseudopapilledema patients was made. The ages of Pseudopapilledema patients are more widely distributed. 
+The Papilledema patients are all below 40.The visit duration and months values are similarly distributed
+however Papilledema patients are more skewed to the higher values for these measures. 
+
+```{r}
+
+# pap %>% 
+#   select(Group, AgePresented, DurOfFU, Months) %>% 
+#   gather(key="x", value="value", -Group) %>% 
+#   ggplot(aes(value)) + 
+#   geom_histogram(aes(fill=Group),binwidth = 5, alpha=0.5, color='black') +
+#   facet_wrap(~x, scales = "free") + theme_wsj(base_family = "serif") +
+#   theme(axis.text.x= element_text(size=8, face=1)) + xlab("h") +
+#   theme(axis.text.y= element_text(size=8, face=1)) + theme(legend.title=element_blank()) + 
+#   scale_fill_manual(values=c("orangered1", "royalblue1"), labels=c("Papilledema","Pseudopapilledema")) 
+
+pap %>% 
+  select(Group, AgePresented, DurOfFU, Months) %>% 
+  gather(key="x", value="value", -Group) %>% 
+  ggplot(aes(value)) + 
+  geom_freqpoly(aes( color=Group),binwidth = 10, alpha=1, size=1) +
+  facet_wrap(~x, scales = "free") + 
+  theme_tufte() +
+  theme(legend.position="top") +
+  theme(axis.text.x= element_text(size=8, face=1)) + xlab("") + 
+  theme(text=element_text(size=15, family="Tw Cen MT")) +
+  theme(axis.text.y= element_text(size=8, face=1)) + theme(legend.title=element_blank()) + 
+  scale_color_manual(values=c("orangered1", "royalblue1"), labels=c("Papilledema","Pseudopapilledema")) 
+
+```
+
+
+Next we examine the distribution of Average RNFL values between Papilledema and Pseudopapilledema
+patients. The average RNFL measurements from Papilledema patients are more highly skewed. Only Papilledema
+patients present average RNFL measurement over 200 $\mu$m.
+
+```{r}
+#pap %>%
+#   ggplot(aes(x=AvgRNFL)) +
+#   geom_histogram(aes(fill=Group),binwidth = 10, alpha=0.5, color='black') +
+#   theme_wsj(base_family = "serif") +
+#   theme(axis.text.x= element_text(size=8, face=1)) +
+#   theme(axis.title=element_text(size=10, face=1)) +
+#   theme(axis.text.y= element_text(size=8, face=1)) + theme(legend.title=element_blank()) +
+#   scale_fill_manual(values=c("orangered1", "royalblue1"), labels=c("Papilledema","Pseudopapilledema"))
+
+pap %>% 
+  ggplot(aes(x=AvgRNFL)) +
+  geom_freqpoly(aes( color=Group),binwidth = 10, alpha=1, size=1.2) +
+  theme(axis.text.x= element_text(size=8, face=1)) +
+  theme(axis.title=element_text(size=10, face=1)) 
+  theme(text=element_text(size=15, family="Tw Cen MT")) 
+  theme(axis.text.y= element_text(size=8, face=1)) + theme(legend.title=element_blank())  
+  scale_color_manual(values=c("orangered1", "royalblue1"), labels=c("Papilledema","Pseudopapilledema")) 
+  
+```
+
+We can examine the distributions of the inferior, superior, nasal and temporal retinal nerve 
+fibre layer thicknesses (RNFL.I, RNFL.S, RNFL.N, RNFL.T) in patients with Papilledema vs. those 
+with Psuedopapilledema. The distributions of all these measurements show a similar pattern of 
+Papilledema values being skewed to higher values. The superior retinal nerve fibre layer thickness
+shows one value which appears to be an outlier. 
+
+```{r}
+
+# pap %>% 
+#   select(Group, RNFL.I, RNFL.S, RNFL.N, RNFL.T ) %>% 
+#   gather(key="x", value="value", -Group) %>% 
+#   ggplot(aes(value)) + 
+#   geom_histogram(aes(fill=Group),binwidth = 20, alpha=0.6, color='black') +
+#   facet_wrap(~x, scales = "free") + 
+#   ylab("Count") +
+#   xlab("RNFL thickness") +
+#   theme_wsj(base_family = "serif") +
+#   theme(axis.text.x= element_text(size=8, face=1)) +
+#   theme(axis.text.y= element_text(size=8, face=1)) + theme(legend.title=element_blank()) + 
+#   scale_fill_manual(values=c("orangered1", "royalblue1"), labels=c("Papilledema","Pseudopapilledema")) 
+
+pap %>% 
+  select(Group, RNFL.I, RNFL.S, RNFL.N, RNFL.T ) %>% 
+  gather(key="x", value="value", -Group) %>% 
+  ggplot(aes(value)) + 
+  geom_freqpoly(aes(color=Group),binwidth = 20, alpha=1, size= 1) +
+  facet_wrap(~x, scales = "free") + 
+  ylab("Count") +
+  xlab("RNFL thickness") +
+  theme_tufte() +
+  theme(legend.position="top") +
+  theme(text=element_text(size=10, family="Tw Cen MT")) +
+  theme(axis.text.x= element_text(size=8, face=1)) +
+  theme(axis.text.y= element_text(size=8, face=1)) + theme(legend.title=element_blank()) + 
+  scale_color_manual(values=c("orangered1", "royalblue1"), labels=c("Papilledema","Pseudopapilledema")) 
+
+```
+
+Boxplots better illustrate the difference in variance of the these measures for Papilledema vs. 
+Psuedopapilledema patients. The outlier was removed so that the distributions could be better compared
+side by side. For each retinal measurement the median value is generally higher for Papilledema patients vs.
+Pseudopapilledema. The range of values is also much greater for Papilledema patients.
+
+```{r}
+
+group_names <- c("Left" = "Left Eye", "Right" = "Right Eye", "RNFL.I" = "RNFL.I", 
+                 "RNFL.S" = "RNFL.S", "RNFL.N" = "RNFL.N", "RNFL.T" = "RNFL.T")
+
+pap %>% 
+  select(Group, eye, RNFL.I, RNFL.S, RNFL.N, RNFL.T ) %>% 
+  filter(RNFL.S < 1000) %>% 
+  gather(key="x", value="value", -Group, -eye) %>% 
+  ggplot(aes(x=Group,y=value, fill=Group)) + 
+  geom_boxplot(alpha=.6, color='black', aes(color=Group)) +
+  scale_color_manual(values = c("orangered1", "royalblue1")) +
+  scale_fill_manual(values=c("orangered1", "royalblue1")) +
+  geom_jitter(alpha=.3, aes(color=Group)) +
+  facet_grid(eye~x, labeller = as_labeller(group_names)) + 
+  theme_tufte() +
+  theme(text=element_text(size=14, family="Tw Cen MT")) +
+  theme(axis.text.x= element_text(size=9, face=1)) +
+  theme(axis.text.y= element_text(size=9, face=1)) + 
+  theme(legend.position="none") + ylab("Thickness") + xlab("Papilledema vs. Pseudopapilledema")
+
+```
+
+
+The trends in average RNFL thickness are examined by charting the values over time for each patient. 
+The range in values for average RNFL thickness is much greater for Papilledema patients than 
+Pseudopapilledema. The RNFL values of each Pseudopapilledema patient stay within a relatively 
+narrow range over time. The one outlier was removed.
+
+
+```{r}
+
+group_names <- c("Pap" = "Papilledema","Pseudo" = "Pseudopapilledema", "Left" = "Left Eye", "Right" = "Right Eye")
+
+pap  %>% 
+  ggplot(aes(x=Months, y=AvgRNFL)) + 
+  geom_point(aes(color=factor(ID)), alpha = 1, size =1.2 ) +
+  geom_line(aes(color=factor(ID)), alpha=1, size = 1) +
+  theme_tufte() +
+  theme(text=element_text(size=14, family="Tw Cen MT")) +
+  theme(legend.title=element_blank()) +
+  theme(legend.position="none") + ylab("Average RNFL") +
+  theme(axis.text.x= element_text(size=8, face=1), axis.text = element_text(size=20, face=1)) +
+  theme(axis.text.y= element_text(size=8, face=1)) +
+  facet_grid(eye ~ Group, labeller = as_labeller(group_names))
+
+```
+
+We can examine the sames trends for each individual RNFL measurement. The pattern is similar to the average RNFL
+for each measurement. There's a much greater amount of variation between each measurement over time for the 
+Papilledema patients compared to the Pseudopapilledema patients.
+
+
+```{r fig.align="center"}
+group_names <- c("Pap" = "Pap.","Pseudo" = "Pseudo.", 
+                 "Left" = "Left Eye", "Right" = "Right Eye",
+                 "RNFL.I" = "RNFL.I", "RNFL.S" = "RNFL.S", 
+                 "RNFL.N" = "RNFL.N", "RNFL.T" = "RNFL.T")
+
+  pap %>% 
+  select(ID, Group, eye, Months, RNFL.I, RNFL.S, RNFL.N, RNFL.T ) %>% 
+  filter(RNFL.S < 1000) %>% 
+  gather(key="x", value="value", -Group, -eye, -Months, -ID) %>% 
+  ggplot(aes(x=Months, y=value)) + 
+  geom_point(aes(color=factor(ID)), alpha = 1, size =.8 ) +
+  geom_line(aes(color=factor(ID)), alpha=.7, size = .9) +
+  theme_tufte() + 
+  theme(text=element_text(size=13, family="Tw Cen MT")) +
+  theme(legend.title=element_blank()) +
+  theme(legend.position="none") + ylab("Average RNFL") +
+  theme(axis.text.x= element_text(size=9, face=1), axis.text = element_text(size=10, face=1)) +
+  theme(axis.text.y= element_text(size=9, face=1)) +
+  facet_grid(eye ~ Group ~ x, labeller = as_labeller(group_names))
+```
+
+##__Feature Engineering__
+
+* Roll up measures to the patient level - for example left_RNFL.I will be a feature - one feature for each 
+eye retinal length measure for all months (average?), also max min perhaps, number of visits, total time between first
+and last visit etc. Might require some programming.
+
+* t-tests on these features.
+
+* random forest - even though there are 19 Pseudo and 7 Pap maybe this would be useful?
+
+* Logistic regression?
+
+* A spreadsheet or application in which a doctor can enter these measures and a probability of Pap is returned?
+
+#__Parametric Tests__
+
+```{r }
+
+x.Psuedo <- 
+  pap %>% 
+  select(ID, AvgRNFL, Group, eye, Months) %>% 
+  filter(eye == 'Left', Months == 0, Group == 'Pseudo') %>% 
+  select(AvgRNFL)
+
+y.Pap <- 
+  pap %>% 
+  select(ID, AvgRNFL, Group, eye, Months) %>% 
+  filter(eye == 'Left', Months == 0, Group == 'Pap') %>% 
+  select(AvgRNFL)
+
+
+
+t.test(x.Psuedo, y.Pap)
+
+
+```
+```{r}
+pap %>% 
+  select(ID, Group) %>% 
+  filter(Group == 'Pseudo') %>% 
+n_distinct()
+```
+
+
+#__Machine Learning__
+
+\newpage
+
+#__References__
+
