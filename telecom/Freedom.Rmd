@@ -1,0 +1,665 @@
+---
+title: "Freedom Mobile Online Training Analysis"
+author: "Alexei Marcilio"
+date: "May 1, 2017"
+output:
+  pdf_document: default
+  html_document:
+    css: lab.css
+    highlight: pygments
+    theme: cerulean
+  word_document: default
+---
+
+```{r echo=FALSE, results='hide', message=FALSE}
+require(ggplot2)
+require(ggthemes)
+require(captioner)
+require(gridExtra)
+require(ggmosaic)
+require(lsr)
+
+download.file("http://www.openintro.org/stat/data/nc.RData", destfile = "nc.RData")
+load("nc.RData")
+
+figs <- captioner(prefix="Figure")
+tbls <- captioner(prefix="Table")
+```
+
+
+<!---
+your comment goes here
+and here
+The margin of error for this test is z * $\sigma_{\bar{x}}$ = 
+-->
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+# __Introduction__
+
+Freedom Mobile is a Canadian wireless telecommunications provider owned by Shaw Communications. With 1,052,758 active subscribers (as of the end of December 2016) in urban areas of Ontario, British Columbia and Alberta, it is Canada's fourth-largest mobile operator.
+
+Founded in 2008 as Wind Mobile by the communications company Globalive, Freedom was one of several new mobile carriers launched in Canada in 2008 after a government initiative to encourage competition in the wireless sector alongside Mobilicity (later acquired by Rogers Communications) and Public Mobile (later acquired by Telus). It initially launched mobile data and voice services in the Greater Toronto and Hamilton Area, Ontario on December 16, 2009 and two days later in Calgary, Alberta. Since then, Southern Ontario has been the main target of network expansion: first with Ottawa in Q1 2011, and then with about half a dozen additional regions, the most recent being Brantford on July 3, 2014.
+
+Training is important to the company and considered integral to their success. Every salesperson, store manager, and customer care employee are asked to complete online training courses each month. Online quizzes also accompany these training modules. The company would like to measure the success of their online training program.
+
+<!--$\newline$-->
+
+
+# __Business objectives.__
+
+Freedom Mobile manages three different types of operations, Corporate Retail, Dealer Retail and Customer Care. Corporate Retail includes outlets that are run by head office, and Dealer Retail covers franchise operations. Customer Care provide support to customers and include three call centers, one in Windsor Ontario, Telepresence a call center in Cairo Egypt, and Startek, a center in Manila Philippines. 
+
+In order to better understand the impact and success of their online training program Freedom would like to have the following research questions answered:
+
+1. _Is there a significant difference in completion rate and quiz scores between different channels?_
+
+2. _Is there a significant difference in these scores between Customer Care's offshore and onshore resources?_
+
+
+3. _Is there a significant difference among each Corporate Retail group, and between each Dealer Retail group?_
+
+4. _Have the completion rates changed over time?_
+
+
+5. _Are quiz scores correlated with completion rates?_
+
+
+
+# __Exploratory Data Analysis__ 
+
+<!---Complete description of the database, checks for outliers and invalid observations.
+--->
+
+<!--
+Load the data
+-->
+
+`r tbls("load",display="cite")` shows the method in which the csv file was loaded into R studio. The file is comma delimited. There are seven variables, five of which are considered factors and two which are categorical. These include the employee id (id_number), channel, group_name, province and city. The two numeric variables are comp_rate (completion rate) and quiz (average quiz score). The comp_rate and quiz variables are continuous variables.
+
+
+_`r tbls("load","R code to load freedom csv data.")`_
+
+
+```{r echo=T, tidy=T}
+setwd("/Users/alexeimarcilio/Desktop/portfolio/telecom")
+getwd()
+freedom <- read.csv("freedom.csv") 
+```
+
+ 
+We can examine the structure of the data. The id_numbers, channels, group_names, prov, and cities are considered factors, and comp_rate and quiz variables are considered numeric (`r tbls("str",display="cite")`). This shows the data is in the correct format for analysis. 
+
+
+_`r tbls("str","Structure of the freedom R data.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+str(freedom)
+```
+
+`r tbls("summary",display="cite")` shows a numerical summary for completion rate and quiz scores. We can see that the mean of the completion rate is 0.8683 and the median is .9090 which shows that the data is left skewed. The interquartile range is `r 0.9640 - 0.8330` and the values range from 0 to 1 (no activities completed - all activities completed)
+
+For the quiz scores we can see that the mean is 90.63 and the median is 92.25 which also shows that the data is left skewed. The interquartile range is `r 95.90 - 87.33` and the values range from 10 to 100. 
+
+_`r tbls("summary","Summary of the completion rate and quiz scores.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+summary(freedom$comp_rate)
+summary(freedom$quiz)
+```
+
+We can see that there are fairly similar numbers of records of the three channels (`r tbls("freq-channel",display="cite")`), with 768 observations for Care and 721 and 680 for Corporate-retail and Dealer-retail respectively. 
+
+_`r tbls("freq-channel","Frequencies of Channels.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+table(freedom$channel)
+```
+
+We plot the completion rates vs quiz scores in order to detect any potential outliers (`r figs("plotcvsq",display="cite")`). We can see that all the completion rates and quiz scores seem reasonable and there are no visible outliers. We used color to differentiate each channel and it's interesting to note that there seems to be a pattern showing the Care channel to have lower completion rates and quiz scores. This is something we will explore later. The data seem concentrated above a .75 completion rate and quiz scores of over 75%.
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=5}
+p <- qplot(freedom$comp_rate, freedom$quiz, data=freedom, xlab="Completion Rate", ylab="Quiz Scores", main="", color=channel) + theme_economist_white()
+p
+#plot(freedom$comp_rate, freedom$quiz, main = "", ylab = "Quiz Scores", xlab = "Completion Rate", cex = .01)
+```
+_`r figs("plotcvsq","Plot of completion rates vs quiz scores.")`_
+
+
+# __Data Visualization__
+
+<!--: Histograms, boxplots, median, mean, quartiles, barplots, scatterplots, pie charts, mosaic plots.__-->
+
+Let's example the distribution of completion rates and quiz scores. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=5}
+plot1 <- qplot(freedom$comp_rate,
+      geom="histogram", fill=I("orange"),
+      xlab = "Completion Rate") + theme_economist_white()
+
+```
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=4}
+plot2 <- qplot(freedom$quiz,
+      geom="histogram", fill=I("blue"),
+      xlab = "Quiz Scores") + theme_economist_white()
+
+
+
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+_`r figs("dist-comp","Distribution of completion rates and quiz scores.")`_
+
+```{r echo=FALSE, results='hide', message=FALSE }
+Mode <- function(x) {
+    if (is.numeric(x)) {
+        x_table <- table(x)
+        return(as.numeric(names(x_table)[which.max(x_table)]))
+    }
+}
+```
+
+
+`r figs("dist-comp",display="cite")` shows the distribution of completion rates and quiz scores. We can see that both are unimodal and skewed to the left. This is understandable as there are many scores that are high. The mode for completion rate is `r round(Mode(freedom$comp_rate),digits=4)` and the mode for the quiz scores is `r Mode(freedom$quiz)`. The distribution is fairly normal. There are quite a few 0 values for completion rates, in fact there are at `r sum(freedom$comp_rate == 0)` employees who have not completed any activities. 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=4}
+box.c <- ggplot(freedom, aes(x=factor(channel), y=comp_rate))
+
+
+box.c <- box.c + geom_boxplot(aes(fill = channel)) + theme_economist_white() + theme(legend.position="none") + 
+  theme(axis.title.x=element_blank()) + labs(y = "Completion Rate")
+
+box.q <- ggplot(freedom, aes(x=factor(channel), y=quiz))
+
+
+box.q <- box.q + geom_boxplot(aes(fill = channel)) + theme_economist_white() + theme(legend.position="none") + 
+    theme(axis.title.x=element_blank()) + labs(y = "Quiz Scores")
+
+
+grid.arrange(box.c, box.q, ncol=2)
+#pl3 <- pl2 + ggtitle("Weight by Sex") + xlab("Sex 1=M, 0=F")
+
+
+
+```
+_`r figs("box-chan-comp","Box plots of completion rates & quiz scores by channel.")`_
+
+
+Box plots of completion rates and quiz scores show that the median values are fairly similar among the channels (`r figs("box-chan-comp",display="cite")`). In addition we can see that the data is left skewed for all channels and that the Care channel has a slightly higher median value than the Corporate Retail channel, which is higher than the Dealer Retail channel for both completion rates and quiz scores. 
+
+As the data is left skewed the median is a good measure of the distribution. The median value of completion rates for the Care channel is `r median(subset(freedom$comp_rate, freedom$channel=="Care")) `, which is higher than that of Corporate Retail (`r median(subset(freedom$comp_rate, freedom$channel=="Corp-retail")) `) and Dealer Retail (`r median(subset(freedom$comp_rate, freedom$channel=="Dealer-retail")) `). 
+
+The median values for quiz scores are  `r median(subset(freedom$quiz, freedom$channel=="Care"), na.rm=TRUE) `  for Care, `r median(subset(freedom$quiz, freedom$channel=="Corp-retail"), na.rm=TRUE) `  for Corporate Retail and  `r median(subset(freedom$quiz, freedom$channel=="Dealer-retail"), na.rm=TRUE) `  for Dealer Retail.
+
+Let's look at the distribution of the offshore and onshore resources for the Care channel. Freedom operates call centers in Windsor Ontario, Cairo Egypt (Telepresence) and Manila Philippines (Startek). We can see that the median values are fairly close to each other however the Teleperformance group has the lowest median values for both completion rates and quiz scores (`r figs("box-care",display="cite")`). All the scores are left skewed and Teleperformance has the lowest values for completion rates and quiz scores as well as the largest interquartile range.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=4}
+
+freedom.care <- subset(freedom, freedom$channel=="Care")
+
+care.c <- ggplot(freedom.care, aes(x=factor(group_name), y=comp_rate))
+
+
+care.c <- care.c + geom_boxplot(aes(fill = group_name)) + theme_economist_white() + theme(legend.position="none") + 
+  theme(axis.title.x=element_blank()) + labs(y = "Completion Rate")
+
+care.q <- ggplot(freedom.care, aes(x=factor(group_name), y=quiz))
+
+
+care.q <- care.q + geom_boxplot(aes(fill = group_name)) + theme_economist_white() + theme(legend.position="none") + 
+    theme(axis.title.x=element_blank()) + labs(y = "Quiz Scores")
+
+
+grid.arrange(care.c, care.q, ncol=2)
+
+```
+_`r figs("box-care","Box plots of completion rates & quiz scores by Care group")`._
+
+
+Let's compare the completion rates for the Corporate Care groups. We can see in `r figs("corp-care",display="cite")` that the median values are somewhat similar, however the range of data differs between the groups. The completion rates show more outliers, all left skewed, for the Ontario groups than for the western groups. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=4}
+freedom.corp <- subset(freedom, freedom$channel=="Corp-retail")
+
+corp.c <- ggplot(freedom.corp, aes(x=factor(group_name), y=comp_rate))
+
+
+corp.c <- corp.c + geom_boxplot(aes(fill = group_name)) + theme_economist_white() + theme(legend.position="none") + 
+  theme(axis.title.x=element_blank()) + labs(y = "Completion Rate") + 
+  #theme(axis.text.x = element_text(angle = 0, hjust = -1)) + 
+  scale_x_discrete(labels=c("Clgry", "Edmon", "Ottawa", "ON East","ON Cen",
+                            "ON SE","ON SW","Van East","Van West"))
+
+corp.c
+#grid.arrange(corp.c, corp.c, ncol=2)
+
+#CORPCA01???Calgary CORPED01???Edmonton CORPON01???Ottawa CORPON02???ON East CORPON03???ON Central CORPON04???ON Southeast CORPON05???ON Southwest CORPVA01???Vancouver Est CORPVA02???Vancouver W
+
+```
+_`r figs("corp-care","Box plots of completion rates & quiz scores by Corporate Retail group")`._
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=4}
+freedom.deal <- subset(freedom, freedom$channel=="Dealer-retail")
+
+corp.d <- ggplot(freedom.deal, aes(x=factor(group_name), y=comp_rate))
+
+#DEALCA01DEALED02DEALON01DEALON02DEALON03DEALON04DEALON05DEALON06DEALVA01
+
+corp.d <- corp.d + geom_boxplot(aes(fill = group_name)) + theme_economist_white() + theme(legend.position="none") + 
+  theme(axis.title.x=element_blank()) + labs(y = "Completion Rate") + 
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5)) + 
+  scale_x_discrete(labels=c("CA01", "ED02", "ON01", "ON02","ON03","ON04","ON05","ON06","VA01"))
+
+corp.d
+#grid.arrange(corp.c, corp.c, ncol=2)
+
+#CORPCA01???Calgary CORPED01???Edmonton CORPON01???Ottawa CORPON02???ON East CORPON03???ON Central CORPON04???ON Southeast CORPON05???ON Southwest CORPVA01???Vancouver Est CORPVA02???Vancouver W
+
+```
+_`r figs("deal-care","Box plots of completion rates & quiz scores by Dealer Retail group")`._
+
+If we do the same for the Dealer Retail groups the box-plot does not reveal great differences between the medians, although the variance among the groups is large (`r figs("deal-care",display="cite")`). Ontario-04 has a very narrow IQR compared to Ontario-04 for example. 
+
+If we now examine the completion rates over time there seems to be a general downward trend (`r figs("rate-time",display="cite")`). Completion rates for the entire company were 1 until October of 2016 when some employees did not finish the learning activities. This trend seemed to accelerate as more and more employees did not complete activities in the ensuing months. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=4}
+correl <- read.csv("correl.csv") 
+
+
+
+p <- qplot(as.Date(as.character(correl$Day), "%Y%m%d"), correl$Completion, data=correl, xlab="Day", ylab="Completion Rate", main="") + theme_economist_white()
+p
+```
+_`r figs("rate-time","Change in the completion rates over time")`._
+
+The other correlation we wish to examine is completion rates vs. quiz scores. Is there a correlation between these two variables? We plotted this in `r figs("plotcvsq",display="cite")`. A correlation is not evident in this plot as the scores are concentrated among the higher values. 
+
+
+
+# __Hypotheses__
+
+<!-- Identifying the appropriate Hypothesis -->
+
+Here are the hypotheses for each of our business questions:
+
+1._Is there a significant difference in completion rate and quiz scores between different channels?_
+
+i) __$H_0: \mu_{care} = \mu_{Corp} = \mu_{Retail}$__
+
+ii) __$H_a: \mu_{care} \ne \mu_{Corp} \ne \mu_{Retail}$__
+
+2._Is there a significant difference in these scores between Customer Care's offshore and onshore resources?_
+
+
+ i) __$H_0: \mu_{Windsor} = \mu_{Startek} = \mu_{Teleperformance}$__
+
+ ii) __$H_a: \mu_{Windsor} \ne \mu_{Startek} \ne \mu_{Teleperformance}$__
+
+3._Is there a significant difference among each Corporate Retail group, and between each Dealer Retail group?_
+
+  * _Corporate Retail_ 
+
+    + __$H_0: \mu_{Corp-Calgary} = \mu_{Corp-Edmonton} = ... = \mu_{Corp-Van West}$__
+
+    + __$H_a: \mu_{Corp-Calgary} \ne \mu_{Corp-Edmonton} \ne ... \ne \mu_{Corp-Van West}$__
+
+  * Dealer Retail_ 
+
+    + __$H_0: \mu_{DEALON01} = \mu_{DEALON02} = ... = \mu_{DEALVA01}$__
+
+    + __$H_a: \mu_{DEALON01} \ne \mu_{DEALON02} \ne ... \ne \mu_{DEALVA01}$__
+
+4._Have the completion rates changed over time?_
+
+  i) $H_0: \beta_{1} = 0.$ _The true linear model has a slope of 0._
+
+  ii) $H_0: \beta_{1} \ne 0.$ _The true linear model does not has a slope of 0._
+
+
+5._Are quiz scores correlated with completion rates?_
+
+  i) $H_0: \beta_{1} = 0.$ _The true linear model has a slope of 0._
+
+  ii) $H_0: \beta_{1} \ne 0.$ _The true linear model does not has a slope of 0._
+
+
+# __Check of statistical conditions__
+
+<!--Identify the appropriate statistical conditions and if all of the conditions have been met__
+-->
+##ANOVAs
+
+Generally we must check three conditions on the data before performing ANOVA:
+
+  * the observations are independent within and across groups,
+  * the data within each group are nearly normal, and
+  * the variability across the groups is about equal.
+  
+These conditions are satisfied. The data are independent as there is no collaboration or communication among the three channels of business, nor among each Corporate Retail group or Dealer Retail group. Also the side by side box plots shown in previous figures show somewhat similar distributions for these groups. 
+
+
+__`r tbls("all_means_std","Mean and STD values for channels, Care groups and Dealer Retails groups.")`__
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.width=8,fig.height=5}
+meanChannel = aggregate(list(mean = freedom$comp_rate), list(channel =factor(freedom$channel)), mean)
+
+STDChannel = aggregate(list(std = freedom$comp_rate), list(channel = factor(freedom$channel)), sd)
+
+channel <- merge(meanChannel,STDChannel, by  = "channel") 
+
+meanCare = aggregate(list(mean = freedom.care$comp_rate), list(group =factor(freedom.care$group_name)), mean)
+
+STDCare = aggregate(list(std = freedom.care$comp_rate), list(group = factor(freedom.care$group_name)), sd)
+
+Care <- merge(meanCare,STDCare, by  = "group") 
+
+
+meanDeal = aggregate(list(mean = freedom.deal$comp_rate), list(group =factor(freedom.deal$group_name)), mean)
+
+STDDeal = aggregate(list(std = freedom.deal$comp_rate), list(group = factor(freedom.deal$group_name)), sd)
+
+Deal <- merge(meanDeal,STDDeal, by  = "group") 
+#grid.arrange(channel, Care, ncol=2)
+
+channel
+Care
+Deal
+```
+
+
+In addition if we example the mean and standard deviations for each channel and each Care group we can see that they are similar, which satisfies the condition that the variability across the groups is about equal (`r tbls("all_means_std",display="cite")`).
+However the standard deviations of the Dealer Retail groups are not that similar. They range from 0.07536823 to 0.23679345.
+
+##Linear Models
+
+To assess whether the linear model is reliable, we need to check for (1) linearity, (2) nearly normal residuals, and (3) constant variability.
+
+<!--$\hat{y} = 69.79 + 23.93 * comp\_rate$
+-->
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.width=3.5,fig.height=3}
+
+m1 <- lm(quiz ~ comp_rate, data = freedom)
+m1
+
+
+p <- qplot(freedom$quiz, freedom$comp_rate, data=freedom, xlab="Completion Rate", ylab="Quiz Score", main="") + theme_economist_white() +  geom_smooth(method='lm')
+
+qqnorm(m1$residuals) + theme_economist_white()
+qqline(m1$residuals) + theme_economist_white()
+p
+
+
+#grid.arrange(p, p, ncol=2)
+#p + abline(lm(freedom$quiz ~ freedom$comp_rate))
+
+
+#plot(freedom$quiz ~ freedom$comp_rate) + theme_economist_white()
+#abline(m1)
+```
+
+_`r figs("norm-comp-quiz","Normal probability plot of the residuals, and scatterplot with a fitted least squares line. ")`_
+
+We can see from `r figs("norm-comp-quiz",display="cite")` that the data satisfies the nearly normal condition. The residuals indicate skewing at each end of the plot, but these balance each other and we can state the data is nearly normal. Also the plot of the data show no discernible pattern so a linear model is a reasonable assumption. There is some indication that the data do not show constant variability at lower completion rates as we can see from the increasing width of the confidence interval. This is not such a large spread so we will proceed. 
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.width=3.5,fig.height=3}
+
+m1 <- lm(Completion ~ as.Date(as.character(correl$Day), "%Y%m%d"), data = correl)
+m1
+summary(m1)
+
+p <- qplot(as.Date(as.character(correl$Day), "%Y%m%d"), correl$Completion, data=correl, xlab="Day", ylab="Completion Rate", main="") + theme_economist_white() +  geom_smooth(method='lm')
+
+qqnorm(m1$residuals) + theme_economist_white()
+qqline(m1$residuals) + theme_economist_white()
+p
+
+```
+
+
+_`r figs("norm-comp-day","Normal probability plot of the residuals, and scatterplot with a fitted least squares line. ")`_
+
+In contrast the plot of the residuals of the correlation between date and completion rates show a skewing at one end (`r figs("norm-comp-day",display="cite")`). Although the plot shows some linearity and almost constant variance, the fact that the data is so skewed precludes the normality assumption. 
+
+
+<!--y hat = 69.79 + 23.93 * comp_rate
+r squared = 0.2209
+
+22.09 % of the variation in quiz scores can be explained by completion rate.
+-->
+# __Statistical Tests__
+
+1._Is there a significant difference in completion rate and quiz scores between different channels?_
+
+i) __$H_0: \mu_{care} = \mu_{Corp} = \mu_{Retail}$__
+
+ii) __$H_a: \mu_{care} \ne \mu_{Corp} \ne \mu_{Retail}$__
+
+
+_`r tbls("hyp1","ANOVA for completion rate each channel")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+aovTest1 <- aov(comp_rate ~ channel, data = freedom)
+summary.aov(aovTest1)
+```
+
+Based on the results in `r tbls("hyp1",display="cite")` we can reject the null hypothesis and conclude that at least one of the channels has a different mean completion rate than the others. 
+
+
+2._Is there a significant difference in these scores between Customer Care's offshore and onshore resources?_
+
+ i) __$H_0: \mu_{Windsor} = \mu_{Startek} = \mu_{Teleperformance}$__
+
+ ii) __$H_a: \mu_{Windsor} \ne \mu_{Startek} \ne \mu_{Teleperformance}$__
+
+_`r tbls("hyp2","ANOVA for completion rate each care organization.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+aovTest2 <- aov(comp_rate ~ group_name, data = freedom.care)
+summary.aov(aovTest2)
+```
+
+Based on the results in `r tbls("hyp2",display="cite")` we can reject the null hypothesis and conclude that at least one of the care groups has a different mean completion rate than the others. 
+
+
+
+
+3._Is there a significant difference among each Corporate Retail group, and between each Dealer Retail group?_
+
+  * _Corporate Retail_ 
+
+    + __$H_0: \mu_{Corp-Calgary} = \mu_{Corp-Edmonton} = ... = \mu_{Corp-Van West}$__
+
+    + __$H_a: \mu_{Corp-Calgary} \ne \mu_{Corp-Edmonton} \ne ... \ne \mu_{Corp-Van West}$__
+
+_`r tbls("hyp3","ANOVA for completion rate each Corporate Retail Group.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+aovTest3 <- aov(comp_rate ~ group_name, data = freedom.corp)
+summary.aov(aovTest3)
+```    
+    
+Based on the results in `r tbls("hyp3",display="cite")` we fail to reject the null hypothesis and conclude that there's no significant difference in the mean completion rates between Corporate Retail Groups. 
+
+
+  * Dealer Retail_ 
+
+    + __$H_0: \mu_{DEALON01} = \mu_{DEALON02} = ... = \mu_{DEALVA01}$__
+
+    + __$H_a: \mu_{DEALON01} \ne \mu_{DEALON02} \ne ... \ne \mu_{DEALVA01}$__
+
+
+_`r tbls("hyp3b","ANOVA for completion rate each Dealer Retail Group.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+aovTest3b <- aov(comp_rate ~ group_name, data = freedom.deal)
+summary.aov(aovTest3b)
+```
+
+
+Based on the results in `r tbls("hyp3b",display="cite")` we can reject the null hypothesis and conclude that at least one of the Dealer Retail Groups has a different mean completion rate than the others. 
+
+4._Have the completion rates changed over time?_
+
+  i) $H_0: \beta_{1} = 0.$ _The true linear model has a slope of 0._
+
+  ii) $H_0: \beta_{1} \ne 0.$ _The true linear model does not has a slope of 0._
+
+Not performed as data did not conform to normality assumptions. 
+
+5._Are quiz scores correlated with completion rates?_
+
+  i) $H_0: \beta_{1} = 0.$ _The true linear model has a slope of 0._
+
+  ii) $H_0: \beta_{1} \ne 0.$ _The true linear model does not has a slope of 0._
+
+
+_`r tbls("hyp5","Regression analysis for completion rates vs. quiz scores.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+m1 <- lm(quiz ~ comp_rate, data = freedom)
+summary(m1)
+```
+
+`r tbls("hyp5",display="cite")` shows there is a significant linear relationship between completion rates and quiz scores as the p-value ~ 0. 
+
+The least squares regression line for the linear model is:
+
+<!--__6.Perform all statistical tests and ANOVA tables - calculation of p-values.__
+-->
+
+
+$\hat{y} = 69.79 + 23.93 * comp\_rate$.
+For every 10% increase in completion rate we can expect a `r 69.79 + 23.93 * .10` increase in quiz scores.
+
+$R^{2} = 0.2209$ which indicates there's a weak correlation between the variables. 
+Only 22.09 % of the variation in quiz scores can be explained by completion rate.
+
+##Addtional Tests
+
+As some of the ANOVA tests were significant we will run pairwise t-tests using the Bonferroni correction to determine which groups are actually different from one another. 
+
+_`r tbls("bon-channel","parewise t-tests with a Bonferroni correction for completion rates vs. channel.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+posthocPairwiseT( aovTest1, p.adjust.method = "bonferroni")
+```
+
+`r tbls("bon-channel",display="cite")` shows that Care has a significantly higher completion rate from Corporate Retail and Dealer Retail which are not significantly different. The mean Care completion rate is about 90% compared to Corporate Retail at 86% and Dealer Retail at 84%.
+
+`r tbls("bon-care",display="cite")` shows that among the Care groups, Teleperformance has a significantly lower mean completion rate at 85%. The other two groups show no significant difference. 
+
+_`r tbls("bon-care","parewise t-tests with a Bonferroni correction for completion rates among Care groups.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+posthocPairwiseT( aovTest2, p.adjust.method = "bonferroni")
+```
+
+
+
+_`r tbls("bon-deal","parewise t-tests with a Bonferroni correction for completion among Dealer Retail groups.")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+posthocPairwiseT( aovTest3b, p.adjust.method = "bonferroni")
+```
+
+The pairwise tests of Dealers (`r tbls("bon-deal",display="cite")`) are inconclusive. 
+Group 4 is significantly less than 5 or group 2 but it's difficult to draw conclusions here.
+
+
+
+##Confidence Intervals
+
+We can also show that there's a significant different between the completion rate for each channel by considering the confidence intervals.
+
+_`r tbls("confidence","Confidence intervals for the mean completion rates of each channel")`_
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+print("Care channel")
+inference(y=freedom.care$comp_rate, est="mean", type="ci", method="theoretical", graphics.off())
+print("Corporate Retail channel")
+inference(y=freedom.corp$comp_rate, est="mean", type="ci", method="theoretical")
+print("Dealer Retail channel")
+inference(y=freedom.deal$comp_rate, est="mean", type="ci", method="theoretical")
+```
+
+We can see from `r tbls("confidence",display="cite")` that the Care channel has a  significantly higher mean completion rate than the other channels by examining the confidence intervals. We are 95% confident that if $\mu_{Care Channel}$ (the average completion rate) were known, the interval between 0.8883 , 0.9088 would contain it. This interval does not overlap with the intervals of the other channels so we know it's statistically significantly higher than the rest. The confidence intervals for the Corporate Retail and Dealer Retail channels do overlap so we know that they are not different from each other.
+
+`r figs("mean-comparison",display="cite")` show a comparison of the means of all these groups. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results='hide', fig.width=6.5,fig.height=5}
+temp = aggregate(list(comp_rate = freedom$comp_rate), list(channel = factor(freedom$channel)), mean)
+
+mean1 <- ggplot(temp, aes(x=channel, y = comp_rate, fill = channel)) + geom_bar(stat = "identity") +   
+  theme_economist_white() + 
+  theme(axis.title.x=element_blank()) + theme(legend.position="none") + labs(y = "Completion Rate") + 
+  geom_text(aes(label=round(comp_rate,3))) +  
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5)) + 
+  scale_x_discrete(labels=c("Care", "Corp", "Deal"))
+
+temp2 = aggregate(list(comp_rate = freedom.care$comp_rate), list(group_name = factor(freedom.care$group_name)), mean)
+
+mean2 <- ggplot(temp2, aes(x=group_name, y = comp_rate, fill = group_name)) + geom_bar(stat = "identity") +   
+  theme_economist_white() + 
+  theme(axis.title.x=element_blank()) + theme(legend.position="none") + labs(y = "Completion Rate") + 
+  geom_text(aes(label=round(comp_rate,3))) +  
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5)) + 
+  scale_x_discrete(labels=c("Star", "Tele", "Wind"))
+
+
+temp3 = aggregate(list(comp_rate = freedom.deal$comp_rate), list(group_name = factor(freedom.deal$group_name)), mean)
+
+mean3 <- ggplot(temp3, aes(x=group_name, y = comp_rate, fill = group_name)) + geom_bar(stat = "identity") +   
+  theme_economist_white() + 
+  theme(axis.title.x=element_blank()) + theme(legend.position="none") + labs(y = "Completion Rate") + 
+  geom_text(aes(label=round(comp_rate,2))) +  
+  theme(axis.text.x = element_text(angle = 0, hjust = 0.5)) + 
+  scale_x_discrete(labels=c("C1", "E2", "O1", "O2", "O3", "O4", "O5","O6", "V1"))
+
+
+
+grid.arrange(mean1, mean2, mean3, ncol=2)
+
+```
+_`r figs("mean-comparison","Comparison of mean completion rates between channels, and among Care and Dealer groups")`._
+
+
+# __Conclusions__
+
+Freedom Mobile, the Canadian wireless telecommunications provider, wished to assess the success of their online training modules. Specifically they wanted to know if the completion rates differed among their three major channels (Corporate Retail, Dealer Retail and Customer Care) and if within these groups there were also differences. In addition they wanted to know if completion rates had changed over time, and if quiz scores were correlated to completion rates. 
+
+
+A statistical analysis was undertaken to find the answers to these questions. The results are as follows:
+
+* There are indeed differences in the completion rates among the three channels.
+    + Care has a significantly higher completion rate than that of the other groups.
+* There are also significant differences within the three Care groups and within Dealer Retailers, but not among Corporate Retailers.
+    + The Teleperformance group has a significantly lower completion rate than the other Care groups.
+* There is only a very weak correlation between completion rates and quiz scores. 
+* It could not be determined if completion rates changed over time as the data violated normality assumptions.
+
+Further research would benefit Freedom Mobile. It would be useful to determine if completion rates relate to the financial performance of different groups. Also, the factors that contribute to the differences between groups warrants further study. 
+
+<!--
+__7.Include at least one set of confidence intervals.__
+
+__8.Correlation and Regression Analysis.__
+
+
+__9.Appendix to include the R code__
+-->
+
+\newpage
+
+# __Appendix__
+
+R studio was used exclusively for the analyses in this report. 
+The following is an extract of the markdown file used for this report.
+
+```{r code=readLines(knitr::purl('Freedom.Rmd', documentation = 0)), eval = FALSE}
+
+```
+
+
+
