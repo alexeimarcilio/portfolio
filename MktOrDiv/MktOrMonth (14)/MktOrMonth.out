@@ -1,0 +1,18 @@
+\BOOKMARK [1][-]{section*.2}{Introduction}{}% 1
+\BOOKMARK [1][-]{section*.3}{Methods}{}% 2
+\BOOKMARK [2][-]{section*.4}{Stocks}{section*.3}% 3
+\BOOKMARK [1][-]{section*.5}{Results}{}% 4
+\BOOKMARK [2][-]{section*.6}{Visualization}{section*.5}% 5
+\BOOKMARK [3][-]{section*.7}{Time Series}{section*.6}% 6
+\BOOKMARK [3][-]{section*.8}{Returns by Year}{section*.6}% 7
+\BOOKMARK [3][-]{section*.9}{Volatility}{section*.6}% 8
+\BOOKMARK [3][-]{section*.10}{Correlations}{section*.6}% 9
+\BOOKMARK [2][-]{section*.11}{Income - Which is Best?}{section*.5}% 10
+\BOOKMARK [3][-]{section*.12}{Feature Engineering}{section*.11}% 11
+\BOOKMARK [3][-]{section*.13}{Retrieve Dividend Data}{section*.11}% 12
+\BOOKMARK [3][-]{section*.14}{Join Tables}{section*.11}% 13
+\BOOKMARK [3][-]{section*.15}{Function to rollup columns}{section*.11}% 14
+\BOOKMARK [3][-]{section*.16}{Table for Analysis}{section*.11}% 15
+\BOOKMARK [3][-]{section*.17}{Calculate Net Worth after Income Draw}{section*.11}% 16
+\BOOKMARK [3][-]{section*.18}{And The Winner is:}{section*.11}% 17
+\BOOKMARK [1][-]{section*.19}{Conclusions}{}% 18
