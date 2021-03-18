@@ -1,0 +1,1013 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+    \usepackage{iftex}
+    \ifPDFTeX
+    	\usepackage[T1]{fontenc}
+    	\usepackage{mathpazo}
+    \else
+    	\usepackage{fontspec}
+    \fi
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for grffile with XeLaTeX
+    \def\Gread@@xetex#1{%
+      \IfFileExists{"\Gin@base".bb}%
+      {\Gread@eps{\Gin@base.bb}}%
+      {\Gread@@xetex@aux#1}%
+    }
+    \makeatother
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{MktOrMonth}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        \ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+
+    
+    
+
+    \setcounter{secnumdepth}{0}
+\title{Index Funds vs. Income Funds for Yearly Income: An Analysis of Resiliency over a Ten Year Period }
+\author{Alexei Marcilio}
+\date{\today}
+\maketitle
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1} 
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+    \hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+    Is it better to draw capital gains from a market ETF (Exchange Traded
+Fund) or use a monthly income ETF? Also, which ETFs provide monthly
+income yet still appreciate over time? These are questions on the mind
+of many investors, especially those who are retired and are counting on
+the income generated from their portfolio. The purpose of this report is
+to answer these questions.
+
+Every investor is looking for yield, and there are many ETFs that
+provide a monthly dividend. Some of these dividends however seem too
+good to be true, and they are. If the dividends paid by an ETF are
+greater than the dividends of the funds held then the yield is partly
+made up of ``return of capital''.
+
+Would a Canadian investor who needs monthly income be better off buying
+an ETF that pays a high dividend, or would he or she be better off
+buying a market ETF and selling shares to obtain the income? In order to
+find out I will compare six of the most popular ETFs in Canada. I'll
+draw the same amount from each fund each year and see how much of the
+fund remains after a ten year period.
+
+    \hypertarget{methods}{%
+\section{Methods}\label{methods}}
+
+    Python will be used to compare the ETFs. The closing price and dividends
+for each of these stocks was obtained with the Yahoo Finance API. I've
+written some functions to buy stock if the dividend exceeds our income
+needs, and sell stock if it falls short.
+
+First I will start with some typical analysis. I will look at the price
+changes over time, the volatility, and how well these ETFs correlate to
+each other.
+
+    \hypertarget{stocks}{%
+\subsection{Stocks}\label{stocks}}
+
+    The following table shows the stocks used in this analysis. They include
+the perennial favorite XIU, which is the first and largest Canadian ETF,
+and CDZ, the Canadian Dividend Aristocrats Index, an ETF made up of a
+diversified group of high quality Canadian dividend companies.
+
+\scalebox{0.8}{
+\begin{tabular}{ll}
+\toprule
+ETF &  Description \\
+\midrule
+ZEB &    BMO Equal Weight Banks Index ETF \\
+FIE &    Common and preferred shares, corporate bonds and income trust units 
+in the Canadian financial sector \\
+CDZ &    Diversified exposure to a portfolio of high quality Canadian dividend paying companies \\
+XTR &    Income-bearing assets, including equities, fixed income securities and real estate investment trusts \\
+XDV &    Exposure to 30 of the highest yielding Canadian companies in the Dow Jones Canada Total Market Index \\
+XIU &    Exposure to large, established Canadian companies (Top 60 in the TSX) \\
+\bottomrule
+\end{tabular}
+}
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{782}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Import libraries}
+\PY{k+kn}{from} \PY{n+nn}{pandas\PYZus{}datareader} \PY{k+kn}{import} \PY{n}{data} \PY{k}{as} \PY{n}{wb}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+\PY{k+kn}{from} \PY{n+nn}{datetime} \PY{k+kn}{import} \PY{n}{datetime}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{783}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{warnings}
+\PY{n}{warnings}\PY{o}{.}\PY{n}{filterwarnings}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ignore}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{784}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Start here \PYZhy{} check these tickers}
+\PY{n}{tickers} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XIU.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CDZ.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XDV.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XTR.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ZEB.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{FIE.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{c+c1}{\PYZsh{} Years of interest}
+\PY{n}{years} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2011}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2012}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2013}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2014}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2015}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2016}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2017}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2018}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2020}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{785}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Pull in yahoo finance data}
+\PY{n}{new\PYZus{}data} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{)}
+\PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n}{tickers}\PY{p}{:}
+    \PY{n}{new\PYZus{}data}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{=} \PY{n}{wb}\PY{o}{.}\PY{n}{DataReader}\PY{p}{(}\PY{n}{t}\PY{p}{,} \PY{n}{data\PYZus{}source}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{yahoo}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{start}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{2011\PYZhy{}1\PYZhy{}1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{786}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{new\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}\PY{o}{.}\PY{n}{str}\PY{o}{.}\PY{n}{slice}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{results}{%
+\section{Results}\label{results}}
+
+    \hypertarget{visualization}{%
+\subsection{Visualization}\label{visualization}}
+
+    Let's visualize these ETFs to see how they compare with regards to
+return, price changes, volatility and correlation.
+
+    \hypertarget{time-series}{%
+\subsubsection{Time Series}\label{time-series}}
+
+    
+
+    Let's take a look at how the prices have changed for these stocks over
+the last decade. The graph below shows a similar pattern among 4 of the
+stocks. FIE and XTR are the outliers with what seem like much less of an
+increase in price over the decade. This makes sense as a large part of
+these two ETFs are made up of bonds and preferred shares.
+
+ZEB seems to be the clear winner. The similar pattern in the top 4
+stocks makes sense as there's obviously overlap among them. ZEB is an
+equal weighted index of Canadian banks, and XIU and other dividend
+stocks will of course include Canadian banks, which are favorites among
+dividend income seekers.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{787}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n}{tickers}\PY{p}{:}
+    \PY{n}{new\PYZus{}data}\PY{p}{[}\PY{n}{t}\PY{p}{]}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{legend}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,} \PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{,} \PYZbs{}
+    \PY{n}{title}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Closing Price}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PYZbs{}
+    \PY{n}{label}\PY{o}{=}\PY{n}{t}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_19_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    The stock prices vary tremendously, for example CDZ is well over \$30 a
+share and FIE is about \$7 at the time this was written it makes sense
+to normalize all the prices to 100. This will make it easier to compare
+the price changes over time.
+
+\[
+\frac{P_t}{P_0} * 100
+\]
+
+The normalized plot below further emphasizes how well ZEB, BMO's equally
+weighted bank index, has done over the last decade.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{809}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} We have to exclude the trade\PYZus{}year column as this is a string.}
+\PY{n}{df\PYZus{}no\PYZus{}date} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{6}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} Now we normalize the data}
+\PY{p}{(}\PY{n}{df\PYZus{}no\PYZus{}date}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{6}\PY{p}{]} \PY{o}{/} \PY{n}{df\PYZus{}no\PYZus{}date}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{*} \PY{l+m+mi}{100}\PY{p}{)}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{figsize} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{15}\PY{p}{,} \PY{l+m+mi}{6}\PY{p}{)}\PY{p}{)}\PY{p}{;}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_21_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{returns-by-year}{%
+\subsubsection{Returns by Year}\label{returns-by-year}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{789}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index}\PY{o}{.}\PY{n}{map}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Add a date column}
+\PY{n}{new\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index}\PY{o}{.}\PY{n}{str}\PY{o}{.}\PY{n}{slice}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Prevent warning when writing back to object}
+\PY{n}{pd}\PY{o}{.}\PY{n}{options}\PY{o}{.}\PY{n}{mode}\PY{o}{.}\PY{n}{chained\PYZus{}assignment} \PY{o}{=} \PY{k+kc}{None}  \PY{c+c1}{\PYZsh{} default=\PYZsq{}warn\PYZsq{}}
+
+\PY{c+c1}{\PYZsh{} A list used to keep the stock return data}
+\PY{n}{values} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} Loop through each year and the each ticker and find the last day and the first day}
+\PY{c+c1}{\PYZsh{} of the year to calculate the return}
+\PY{k}{for} \PY{n}{y} \PY{o+ow}{in} \PY{n}{years}\PY{p}{:}
+    \PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n}{tickers}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} We can use iloc to find the last value and the first value}
+        \PY{n}{rate\PYZus{}return} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{p}{[}\PY{n}{new\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{y}\PY{p}{]}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{/} \PYZbs{}
+        \PY{n}{new\PYZus{}data}\PY{p}{[}\PY{n}{new\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{n}{y}\PY{p}{]}\PY{o}{.}\PY{n}{iloc}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{n}{t}\PY{p}{]} \PY{o}{\PYZhy{}} \PY{l+m+mi}{1}
+        \PY{n}{values}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{p}{[}\PY{n}{t}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{rate\PYZus{}return}\PY{p}{]}\PY{p}{)}
+    
+
+\PY{c+c1}{\PYZsh{} Create the DataFrame from the list}
+\PY{n}{values\PYZus{}df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{values}\PY{p}{)}  
+\PY{c+c1}{\PYZsh{} Rename the DataFrame columns}
+\PY{n}{values\PYZus{}df}\PY{o}{.}\PY{n}{columns} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ticker}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{yr\PYZus{}return}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{c+c1}{\PYZsh{} Sort the DataFrame}
+\PY{n}{values\PYZus{}df}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ticker}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} Format the value of the yr\PYZus{}return column}
+\PY{n}{values\PYZus{}df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{yr\PYZus{}return}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n+nb}{round}\PY{p}{(}\PY{n}{values\PYZus{}df}\PY{o}{.}\PY{n}{yr\PYZus{}return}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)} \PY{o}{*} \PY{l+m+mi}{100}
+
+\PY{c+c1}{\PYZsh{} Make the index just the date instead of the datetime}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index}\PY{o}{.}\PY{n}{str}\PY{o}{.}\PY{n}{slice}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,}\PY{l+m+mi}{10}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    The following figure shows the returns for each of the ETFs by year.
+There have been three or four down years for each of the funds in the
+last decade.
+
+ZEB has had a couple of stellar years.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{791}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{values\PYZus{}df}
+
+\PY{n}{g} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{catplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ticker}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{yr\PYZus{}return}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{hue}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{values\PYZus{}df}\PY{p}{,} \PY{n}{kind}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bar}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{legend}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{fig}\PY{o}{.}\PY{n}{set\PYZus{}figwidth}\PY{p}{(}\PY{l+m+mi}{9}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{fig}\PY{o}{.}\PY{n}{suptitle}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Year by Year Return}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{g}\PY{o}{.}\PY{n}{set\PYZus{}axis\PYZus{}labels}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Stock}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Percent Return}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{;}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_25_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{volatility}{%
+\subsubsection{Volatility}\label{volatility}}
+
+    The following plots show the distributions of the prices for each of
+these tickers over the decade. XTR shows the least amount of volatility.
+This makes sense due to its high bond component.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{773}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n}{tickers}\PY{p}{:}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{n}{figsize}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{6}\PY{p}{,}\PY{l+m+mf}{2.2}\PY{p}{)}\PY{p}{)}
+    \PY{c+c1}{\PYZsh{}fig, axs = plt.subplots(2, 3)}
+    \PY{n}{sns}\PY{o}{.}\PY{n}{distplot}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{p}{[}\PY{n}{t}\PY{p}{]}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{bins}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{purple}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{;}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_28_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_28_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_28_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_28_3.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_28_4.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_28_5.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{correlations}{%
+\subsubsection{Correlations}\label{correlations}}
+
+    The heatmap below shows how correlated the ETFs are. It's no surprise
+that the pure stock ETFs are highly correlated.
+
+CDZ and XDV are highly correlated (94\%). This is understandable as they
+both hold the major banks. Again XTR is the outlier here as it includes
+some US stock and it's weighted about 50/50 between stocks and bonds.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{792}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Calculate correlations}
+\PY{n}{corr} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{p}{[}\PY{n}{tickers}\PY{p}{]}\PY{o}{.}\PY{n}{corr}\PY{p}{(}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} Heatmap}
+\PY{n}{sns}\PY{o}{.}\PY{n}{heatmap}\PY{p}{(}\PY{n}{corr}\PY{p}{,} \PY{n}{cmap} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Blues}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{annot}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}\PY{p}{;}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_31_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \hypertarget{income---which-is-best}{%
+\subsection{Income - Which is Best?}\label{income---which-is-best}}
+
+    To answer the question of which ETF is the most valuable after a decade
+of providing income we need to create a dataframe of the start and end
+closing prices for each stock, and the sum of all the dividends provided
+for each year.
+
+The following code creates such a dataframe using data accessed from
+Yahoo Finance's API.
+
+    \hypertarget{feature-engineering}{%
+\subsubsection{Feature Engineering}\label{feature-engineering}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{751}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Let\PYZsq{}s create a table for the yearly data}
+\PY{n}{dfReturns} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Year}\PY{l+s+s2}{\PYZdq{}} \PY{p}{:}\PY{p}{[}\PY{l+m+mi}{2011}\PY{p}{,}\PY{l+m+mi}{2012}\PY{p}{,}\PY{l+m+mi}{2013}\PY{p}{,}\PY{l+m+mi}{2014}\PY{p}{,}\PY{l+m+mi}{2015}\PY{p}{,}\PY{l+m+mi}{2016}\PY{p}{,}\PY{l+m+mi}{2017}\PY{p}{,}\PY{l+m+mi}{2018}\PY{p}{,}\PY{l+m+mi}{2019}\PY{p}{,}\PY{l+m+mi}{2020}\PY{p}{,}\PY{l+m+mi}{2021}\PY{p}{]}\PY{p}{\PYZcb{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{752}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}new\PYZus{}data[\PYZsq{}Date\PYZsq{}]= pd.to\PYZus{}datetime(new\PYZus{}data[\PYZsq{}Date\PYZsq{}])}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{to\PYZus{}datetime}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{index}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{retrieve-dividend-data}{%
+\subsubsection{Retrieve Dividend Data}\label{retrieve-dividend-data}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{753}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Yahoo finance app}
+\PY{k+kn}{import} \PY{n+nn}{yfinance} \PY{k}{as} \PY{n+nn}{yf}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{754}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} bring in the data}
+\PY{n}{cdz} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{Ticker}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{CDZ.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{xiu} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{Ticker}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{XIU.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{xdv} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{Ticker}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{XDV.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{xtr} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{Ticker}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{XTR.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{zeb} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{Ticker}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ZEB.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{fie} \PY{o}{=} \PY{n}{yf}\PY{o}{.}\PY{n}{Ticker}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{FIE.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{755}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Create an 11 year period}
+\PY{n}{CDZ\PYZus{}hist} \PY{o}{=} \PY{n}{cdz}\PY{o}{.}\PY{n}{history}\PY{p}{(}\PY{n}{period}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{11y}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{XIU\PYZus{}hist} \PY{o}{=} \PY{n}{xiu}\PY{o}{.}\PY{n}{history}\PY{p}{(}\PY{n}{period}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{11y}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{XDV\PYZus{}hist} \PY{o}{=} \PY{n}{xdv}\PY{o}{.}\PY{n}{history}\PY{p}{(}\PY{n}{period}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{11y}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{XTR\PYZus{}hist} \PY{o}{=} \PY{n}{cdz}\PY{o}{.}\PY{n}{history}\PY{p}{(}\PY{n}{period}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{11y}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{ZEB\PYZus{}hist} \PY{o}{=} \PY{n}{zeb}\PY{o}{.}\PY{n}{history}\PY{p}{(}\PY{n}{period}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{11y}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{FIE\PYZus{}hist} \PY{o}{=} \PY{n}{fie}\PY{o}{.}\PY{n}{history}\PY{p}{(}\PY{n}{period}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{11y}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{join-tables}{%
+\subsubsection{Join Tables}\label{join-tables}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{756}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Add the dividend data for each stock to the main table}
+\PY{n}{new\PYZus{}data} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{CDZ\PYZus{}hist}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CDZ.TO.DIV}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{new\PYZus{}data} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{XIU\PYZus{}hist}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XIU.TO.DIV}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{new\PYZus{}data} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{XDV\PYZus{}hist}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XDV.TO.DIV}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{new\PYZus{}data} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{XTR\PYZus{}hist}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XTR.TO.DIV}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{new\PYZus{}data} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{ZEB\PYZus{}hist}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ZEB.TO.DIV}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{new\PYZus{}data} \PY{o}{=} \PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{join}\PY{p}{(}\PY{n}{FIE\PYZus{}hist}\PY{p}{[}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{]}\PY{p}{)}
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{rename}\PY{p}{(}\PY{n}{columns}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Dividends}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{FIE.TO.DIV}\PY{l+s+s1}{\PYZsq{}}\PY{p}{\PYZcb{}}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{757}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{new\PYZus{}data}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{n}{level}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{function-to-rollup-columns}{%
+\subsubsection{Function to rollup
+columns}\label{function-to-rollup-columns}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{758}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Function to add columns to dfReturns \PYZhy{} }
+\PY{k}{def} \PY{n+nf}{Add\PYZus{}Columns}\PY{p}{(}\PY{n}{df}\PY{p}{,} \PY{n}{col\PYZus{}name}\PY{p}{)}\PY{p}{:}
+    \PY{n}{min\PYZus{}indices} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{idxmin}\PY{p}{(}\PY{p}{)}
+    \PY{n}{dfReturns}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{o}{+}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZus{}start}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{min\PYZus{}indices}\PY{p}{]}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{p}{)}
+    \PY{n}{max\PYZus{}indices} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{groupby}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{trade\PYZus{}year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Date}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{idxmax}\PY{p}{(}\PY{p}{)}
+    \PY{n}{dfReturns}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{o}{+}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZus{}end}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n}{df}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{max\PYZus{}indices}\PY{p}{]}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{p}{]}\PY{p}{)}
+    \PY{n}{dfReturns}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{o}{+}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZus{}div}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n}{df}\PY{p}{[}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{trade\PYZus{}year}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{col\PYZus{}name}\PY{o}{+}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.DIV}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{]}\PY{o}{.}\PYZbs{}
+                                      \PY{n}{groupby}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{trade\PYZus{}year}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{sum}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{n}{col\PYZus{}name}\PY{o}{+}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.DIV}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{759}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{Add\PYZus{}Columns}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{CDZ.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{Add\PYZus{}Columns}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{XIU.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{Add\PYZus{}Columns}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{XDV.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{Add\PYZus{}Columns}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{XTR.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{Add\PYZus{}Columns}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ZEB.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{Add\PYZus{}Columns}\PY{p}{(}\PY{n}{new\PYZus{}data}\PY{p}{,}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{FIE.TO}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{810}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}dfReturns.iloc[0:3,0:4]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{table-for-analysis}{%
+\subsubsection{Table for Analysis}\label{table-for-analysis}}
+
+    The final result is a table that shows the start and end closing prices,
+and total dividends paid for each stock for each year.
+
+Here are the first couple rows for the CDZ columns:
+
+\begin{tabular}{rrrr}
+\toprule
+ Year &  CDZ.TO\_start &  CDZ.TO\_end &  CDZ.TO\_div \\
+\midrule
+ 2011 &     20.760000 &   21.309999 &       0.688 \\
+ 2012 &     21.490000 &   22.440001 &       0.724 \\
+ 2013 &     22.690001 &   24.580000 &       0.855 \\
+\bottomrule
+\end{tabular}
+
+    \hypertarget{calculate-net-worth-after-income-draw}{%
+\subsubsection{Calculate Net Worth after Income
+Draw}\label{calculate-net-worth-after-income-draw}}
+
+    Now we are ready to ready to test each scenario.
+
+\textbf{Here are the rules:}
+
+\begin{itemize}
+\item
+  At the beginning of the first year buy \$1,000,000 of stock.
+\item
+  Draw \$40,000 in income from each stock at the end of each
+  year.\(\footnote{We will consider this year to have ended today}\)
+\item
+  If the dividends pay more than \$40,000 reinvest the remainder, if
+  they pay less, sell shares to make up the difference.
+\item
+  Let's see what is remaining for each stock.
+\end{itemize}
+
+The following function will do these calculations.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{805}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{calcRemain}\PY{p}{(}\PY{n}{stock\PYZus{}name}\PY{p}{)}\PY{p}{:}
+    \PY{c+c1}{\PYZsh{} variables}
+    \PY{n}{initial\PYZus{}amt} \PY{o}{=} \PY{l+m+mi}{1\PYZus{}000\PYZus{}000}
+    \PY{n}{year\PYZus{}income} \PY{o}{=} \PY{l+m+mi}{40\PYZus{}000}
+    
+    \PY{n}{result} \PY{o}{=} \PY{p}{[}\PY{p}{(}\PY{n}{y}\PY{p}{,}\PY{n}{s}\PY{p}{,}\PY{n}{e}\PY{p}{,}\PY{n}{d}\PY{p}{)} \PY{k}{for} \PY{n}{y}\PY{p}{,}\PY{n}{s}\PY{p}{,}\PY{n}{e}\PY{p}{,}\PY{n}{d} \PY{o+ow}{in} \PY{n+nb}{zip}\PY{p}{(}\PY{n}{dfReturns}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Year}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{dfReturns}\PY{p}{[}\PY{n}{stock\PYZus{}name}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZus{}start}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PYZbs{}
+                                     \PY{n}{dfReturns}\PY{p}{[}\PY{n}{stock\PYZus{}name}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZus{}end}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,}\PY{n}{dfReturns}\PY{p}{[}\PY{n}{stock\PYZus{}name}\PY{o}{+}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZus{}div}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{]}
+    
+    \PY{n}{initial\PYZus{}price} \PY{o}{=} \PY{n}{result}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+    \PY{n}{no\PYZus{}shares} \PY{o}{=} \PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{n}{initial\PYZus{}amt}\PY{o}{/}\PY{n}{initial\PYZus{}price}\PY{p}{)}
+
+    \PY{k}{for} \PY{n}{row} \PY{o+ow}{in} \PY{n}{result}\PY{p}{:}
+        \PY{n}{div\PYZus{}income} \PY{o}{=} \PY{n}{no\PYZus{}shares} \PY{o}{*} \PY{n}{row}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}
+        
+        \PY{k}{if} \PY{n}{div\PYZus{}income} \PY{o}{\PYZgt{}} \PY{n}{year\PYZus{}income}\PY{p}{:}
+            \PY{n}{end\PYZus{}price} \PY{o}{=} \PY{n}{row}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}
+            \PY{n}{buy\PYZus{}shares} \PY{o}{=} \PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{p}{(}\PY{n}{div\PYZus{}income} \PY{o}{\PYZhy{}} \PY{n}{year\PYZus{}income}\PY{p}{)}\PY{o}{/}\PY{n}{end\PYZus{}price}\PY{p}{)}
+            \PY{n}{no\PYZus{}shares} \PY{o}{=} \PY{n}{no\PYZus{}shares} \PY{o}{+} \PY{n}{buy\PYZus{}shares}
+            
+        \PY{k}{else}\PY{p}{:}
+            \PY{n}{end\PYZus{}price} \PY{o}{=} \PY{n}{row}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}
+            \PY{n}{sell\PYZus{}shares} \PY{o}{=} \PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{p}{(}\PY{n}{year\PYZus{}income} \PY{o}{\PYZhy{}} \PY{n}{div\PYZus{}income}\PY{p}{)}\PY{o}{/}\PY{n}{end\PYZus{}price}\PY{p}{)}
+            \PY{n}{no\PYZus{}shares} \PY{o}{=} \PY{n}{no\PYZus{}shares} \PY{o}{\PYZhy{}} \PY{n}{sell\PYZus{}shares}
+            
+    \PY{n}{final\PYZus{}amt} \PY{o}{=} \PY{n}{result}\PY{p}{[}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{*} \PY{n}{no\PYZus{}shares}
+    \PY{k}{return}\PY{p}{(}\PY{n}{final\PYZus{}amt}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Let's apply the function to each of the stocks.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{806}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{stock\PYZus{}list} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+\PY{n}{stock\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{n}{calcRemain}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CDZ.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{stock\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{n}{calcRemain}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XIU.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{stock\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{n}{calcRemain}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XDV.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{stock\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{n}{calcRemain}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XTR.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{stock\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{n}{calcRemain}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ZEB.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{stock\PYZus{}list}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{mt}\PY{o}{.}\PY{n}{trunc}\PY{p}{(}\PY{n}{calcRemain}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{FIE.TO}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{807}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dfRemains} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{stock\PYZus{}list}\PY{p}{,} \PY{n}{index} \PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CDZ}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XIU}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XDV}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{XTR}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ZEB}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{FIE}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} 
+                                              \PY{n}{columns} \PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Remaining}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)} 
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{808}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dfRemains}\PY{o}{.}\PY{n}{sort\PYZus{}values}\PY{p}{(}\PY{n}{by}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Remaining}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{ascending}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{style}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+si}{\PYZob{}0:,.2f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{808}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<pandas.io.formats.style.Styler at 0x7fca41a03970>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{and-the-winner-is}{%
+\subsubsection{And The Winner is:}\label{and-the-winner-is}}
+
+    The following table shows the remaining funds had we invested
+\$1,000,000 in each of these stocks and withdrew \$40,000 in income each
+year.
+
+\begin{tabular}{lr}
+\toprule
+ETF &  Remaining \\
+\midrule
+ZEB &    \$2,071,776 \\
+FIE &    \$1,521,226 \\
+CDZ &    \$1,432,213 \\
+XTR &    \$1,413,755 \\
+XDV &    \$1,400,908 \\
+XIU &    \$1,289,416 \\
+\bottomrule
+\end{tabular}
+
+     There's a large difference in each of the ETFs. ZEB, BMO's Equal
+Weighted Bank Stock ETF is the clear winner. If we had invested
+\$1,000,000 ten years ago in ZEB and withdrew \$40,000 each year we
+would now have over \$2,000,000 in the fund. Remarkable. It seems that
+Banks ruled, at least for the last decade.
+
+The remaining funds are relatively close. The difference between the
+growth of FIE, the second ranked fund, and XIU the worst fund, is only
+\$230,000. With every fund examined it was possible to take \$40,000 in
+income each year and still keep all of your principle.
+
+    \hypertarget{conclusions}{%
+\section{Conclusions}\label{conclusions}}
+
+    It seems it was the decade of Canadian bank stocks. We were able to draw
+a healthy income from ZEB and also more than double our investment. It's
+important to note that the last decade's results may not continue into
+the next ten years. We faced a time when interest rates have steadily
+fallen, Canadian stocks have underperformed their American counterparts,
+and growth of the tech sector has been phenomenal. It's likely that the
+macro conditions that brought about these results won't continue into
+future decades.
+
+However Canadian banks have been incredibly robust over many years. It's
+amazing to think that BMO, Scotiabank, Toronto Dominion, CIBC and The
+Royal Bank have been consistently paying dividends for over 100 years!
+In fact the Bank of Nova Scotia and The Bank of Montreal have almost
+been paying for 200 years. Our banks have a history of stability,
+regulatory prudence, and consistency that is admirable.
+
+Its also important to remember that there are tax considerations for the
+types of income one receives from stock. Income from dividend stocks
+such as CDZ, XDV and ZEB are eligible for a dividend tax credit. Over
+90\% of the distributions from these ETFs are \textbf{eligible
+dividends}. That's not true for many income funds - for XTR it's only
+about 25\%. Consider that you can make over \$50,000 in income each year
+from dividends and you won't pay a cent in tax, provided it's your only
+source of
+income.\(\footnote{Financial Post, April 11th, 2017, "You can earn \$50K in tax-free dividends, but there's a catch: You can't have a job"}\)
+
+We cannot know the future, but it would probably be a good bet to invest
+in Canadian bank stocks if one wanted consistent monthly income with
+long term growth of capital.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

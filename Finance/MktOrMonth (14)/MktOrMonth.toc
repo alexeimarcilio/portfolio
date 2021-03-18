@@ -1,0 +1,18 @@
+\contentsline {section}{Introduction}{1}{section*.2}% 
+\contentsline {section}{Methods}{1}{section*.3}% 
+\contentsline {subsection}{Stocks}{1}{section*.4}% 
+\contentsline {section}{Results}{2}{section*.5}% 
+\contentsline {subsection}{Visualization}{2}{section*.6}% 
+\contentsline {subsubsection}{Time Series}{2}{section*.7}% 
+\contentsline {subsubsection}{Returns by Year}{4}{section*.8}% 
+\contentsline {subsubsection}{Volatility}{5}{section*.9}% 
+\contentsline {subsubsection}{Correlations}{8}{section*.10}% 
+\contentsline {subsection}{Income - Which is Best?}{8}{section*.11}% 
+\contentsline {subsubsection}{Feature Engineering}{9}{section*.12}% 
+\contentsline {subsubsection}{Retrieve Dividend Data}{9}{section*.13}% 
+\contentsline {subsubsection}{Join Tables}{9}{section*.14}% 
+\contentsline {subsubsection}{Function to rollup columns}{10}{section*.15}% 
+\contentsline {subsubsection}{Table for Analysis}{10}{section*.16}% 
+\contentsline {subsubsection}{Calculate Net Worth after Income Draw}{10}{section*.17}% 
+\contentsline {subsubsection}{And The Winner is:}{12}{section*.18}% 
+\contentsline {section}{Conclusions}{12}{section*.19}% 
